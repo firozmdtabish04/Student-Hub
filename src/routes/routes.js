@@ -1,0 +1,13 @@
+import Dashboard from "../pages/Dashboard";
+import ClockPage from "../pages/ClockPage";
+import StopwatchPage from "../pages/StopwatchPage";
+import PomodoroPage from "../pages/PomodoroPage";
+import TodoPage from "../pages/TodoPage";
+
+export const routes = [
+  { path: "/", component: Dashboard },
+  { path: "/clock", component: ClockPage },
+  { path: "/stopwatch", component: StopwatchPage },
+  { path: "/pomodoro", component: PomodoroPage },
+  { path: "/todo", component: TodoPage },
+];

@@ -1,0 +1,9 @@
+ npm install three @react-three/fiber @react-three/drei
+
+  npm install three @react-three/fiber @react-three/drei 
+
+  npm install react-router-dom
+
+   npm install framer-motion
+
+    npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
