@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Gradient animation */
+/* 🔥 Smooth global UI */
+* {
+    transition: all 0.25s ease;
+}
+
+/* 🌈 Animated gradient */
 @keyframes gradientMove {
     0% {
         background-position: 0% 50%;
@@ -15,15 +20,10 @@
 
 .animate-gradient {
     background-size: 200% 200%;
-    animation: gradientMove 10s linear infinite;
+    animation: gradientMove 8s linear infinite;
 }
 
-/* Smooth UI */
-* {
-    transition: all 0.3s ease;
-}
-
-/* Scrollbar */
+/* 🎯 Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -31,4 +31,42 @@
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(to bottom, #3b82f6, #a855f7);
     border-radius: 10px;
+}
+
+/* 🔄 Flip utilities */
+.perspective {
+    perspective: 1200px;
+}
+
+.transform-style {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+/* 3D perspective */
+.perspective {
+    perspective: 1200px;
+}
+
+/* preserve 3D */
+.transform-style {
+    transform-style: preserve-3d;
+}
+
+/* hide back */
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* rotate */
+.rotate-y-180 {
+    transform: rotateY(180deg);
 }
