@@ -7,3 +7,5 @@
    npm install framer-motion
 
     npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+
+    npm install recharts
