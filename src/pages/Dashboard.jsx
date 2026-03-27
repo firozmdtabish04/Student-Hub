@@ -23,6 +23,7 @@ import {
   faRocket,
   faSun,
   faMoon,
+  faCalculator,
 } from "@fortawesome/free-solid-svg-icons";
 
 function Dashboard({ dark, setDark }) {
@@ -119,11 +120,11 @@ function Dashboard({ dark, setDark }) {
         route: "/notes",
       },
       {
-        title: "Analytics",
-        desc: "Productivity stats",
-        details: "Track your productivity visually.",
-        icon: faChartBar,
-        route: "/analytics",
+        title: "Calculator",
+        desc: "Quick calculations",
+        details: "Perform fast calculations with a clean UI.",
+        icon: faCalculator,
+        route: "/calculator",
       },
       {
         title: "Focus Mode",

@@ -6,6 +6,8 @@ import TodoPage from "../pages/TodoPage";
 import Calendar from "../pages/CalendarPage";
 import Alarm from "../components/Alarm";
 import Notes from "../components/Notes";
+import Calculator from "../components/Calculator";
+import FocusMode from "../components/FocusMode";
 
 export const routes = [
   { path: "/", component: Dashboard },
@@ -15,5 +17,7 @@ export const routes = [
   { path: "/todo", component: TodoPage },
   { path: "/calendar", component: Calendar },
   { path: "/alarm", component: Alarm },
-  {path: "/notes", component :Notes}
+  { path: "/notes", component: Notes },
+  { path: "calculator", component: Calculator },
+  { path: "/focus", component: FocusMode },
 ];
