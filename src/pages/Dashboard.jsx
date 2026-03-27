@@ -27,6 +27,7 @@ import {
   faMoon,
   faCalculator,
 } from "@fortawesome/free-solid-svg-icons";
+import Footer from "../components/Footer";
 
 function Dashboard({ dark, setDark }) {
   const navigate = useNavigate();
@@ -256,6 +257,7 @@ const routeIcons = {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }
