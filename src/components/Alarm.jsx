@@ -17,59 +17,49 @@ function Alarm() {
   const [date, setDate] = useState("");
   const [repeat, setRepeat] = useState("once");
 
-  const [triggeredAlarm, setTriggeredAlarm] = useState(null);
+  const [now, setNow] = useState(new Date());
+  const [triggered, setTriggered] = useState(null);
 
   const audioRef = useRef(null);
 
-  // 🔔 Ask Notification Permission
+  // 🕒 Live Time
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // 🔔 Notification Permission
   useEffect(() => {
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
   }, []);
 
-  // SAVE
+  // 💾 Save
   useEffect(() => {
     localStorage.setItem("alarms", JSON.stringify(alarms));
   }, [alarms]);
 
-  // ⏰ CHECK ALARMS
+  // ⏰ Alarm Check
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date();
+      const nowTime = new Date().toTimeString().slice(0, 5);
 
-      alarms.forEach((alarm) => {
-        if (!alarm.active) return;
+      alarms.forEach((a) => {
+        if (!a.active) return;
 
-        const nowTime = now.toTimeString().slice(0, 5);
-        const nowDate = now.toISOString().slice(0, 10);
+        if (a.time === nowTime) {
+          setTriggered(a);
 
-        const matchTime = alarm.time === nowTime;
-
-        let match = false;
-
-        if (alarm.repeat === "once") {
-          match = alarm.date === nowDate && matchTime;
-        } else if (alarm.repeat === "daily") {
-          match = matchTime;
-        }
-
-        if (match) {
-          setTriggeredAlarm(alarm);
-
-          // 🔔 Notification
           if (Notification.permission === "granted") {
-            new Notification("⏰ Alarm Ringing!", {
-              body: `Time: ${alarm.time}`,
-            });
+            new Notification("⏰ Alarm!", { body: a.time });
           }
 
-          // 🔊 SOUND
           audioRef.current?.play();
 
           setAlarms((prev) =>
-            prev.map((a) =>
-              a.id === alarm.id ? { ...a, active: alarm.repeat !== "once" } : a,
+            prev.map((x) =>
+              x.id === a.id ? { ...x, active: a.repeat !== "once" } : x,
             ),
           );
         }
@@ -79,56 +69,53 @@ function Alarm() {
     return () => clearInterval(interval);
   }, [alarms]);
 
-  // ADD ALARM
+  // ➕ Add Alarm
   const addAlarm = () => {
     if (!time) return;
 
-    const newAlarm = {
-      id: Date.now(),
-      time,
-      date,
-      repeat,
-      active: true,
-    };
+    setAlarms((prev) => [
+      {
+        id: Date.now(),
+        time,
+        date,
+        repeat,
+        active: true,
+      },
+      ...prev,
+    ]);
 
-    setAlarms((prev) => [newAlarm, ...prev]);
     setTime("");
     setDate("");
   };
 
-  // DELETE
-  const deleteAlarm = (id) => {
-    setAlarms((prev) => prev.filter((a) => a.id !== id));
-  };
+  // ❌ Delete
+  const remove = (id) => setAlarms((p) => p.filter((a) => a.id !== id));
 
-  // TOGGLE
-  const toggleAlarm = (id) => {
-    setAlarms((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, active: !a.active } : a)),
+  // 🔄 Toggle
+  const toggle = (id) =>
+    setAlarms((p) =>
+      p.map((a) => (a.id === id ? { ...a, active: !a.active } : a)),
     );
-  };
 
-  // 🛑 STOP ALARM
-  const stopAlarm = () => {
-    setTriggeredAlarm(null);
-    audioRef.current?.pause();
+  // 🛑 Stop Alarm
+  const stop = () => {
+    setTriggered(null);
+    audioRef.current.pause();
     audioRef.current.currentTime = 0;
   };
 
   // 🌙 Sleep Analytics
-  const sleepHours = () => {
+  const sleep = () => {
     if (!time) return null;
-
     const now = new Date();
     const [h, m] = time.split(":");
 
-    const alarmDate = new Date();
-    alarmDate.setHours(h, m, 0);
+    const alarm = new Date();
+    alarm.setHours(h, m, 0);
 
-    if (alarmDate < now) alarmDate.setDate(alarmDate.getDate() + 1);
+    if (alarm < now) alarm.setDate(alarm.getDate() + 1);
 
-    const diff = (alarmDate - now) / (1000 * 60 * 60);
-    return diff.toFixed(1);
+    return ((alarm - now) / 3600000).toFixed(1);
   };
 
   return (
@@ -139,53 +126,69 @@ function Alarm() {
       </audio>
 
       {/* HEADER */}
-      <div className="flex justify-between items-center px-4 py-4 border-b border-gray-800">
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
         <button
           onClick={() => navigate(-1)}
           className="border px-3 py-2 rounded"
         >
           ← Back
         </button>
-        <h1 className="text-lg font-semibold">SMART ALARM</h1>
-        <div />
+
+        <h1 className="text-xl font-semibold">SMART ALARM</h1>
+
+        <div className="text-sm text-gray-400">{now.toLocaleTimeString()}</div>
       </div>
 
       {/* MAIN */}
       <div className="flex-1 flex justify-center items-center px-4">
-        <div className="w-full max-w-xl bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-          {/* INPUT */}
+        <div className="w-full max-w-xl bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+          {/* INPUTS */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            {/* TIME */}
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="px-3 py-2 bg-black border border-gray-700 rounded"
+              className="bg-black border border-gray-500 text-white px-3 py-2 rounded
+              w-full [color-scheme:dark]"
             />
 
+            {/* DATE */}
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="px-3 py-2 bg-black border border-gray-700 rounded"
+              className="bg-black border border-gray-500 text-white px-3 py-2 rounded
+              w-full [color-scheme:dark]"
             />
 
-            <select
-              value={repeat}
-              onChange={(e) => setRepeat(e.target.value)}
-              className="px-3 py-2 bg-black border border-gray-700 rounded"
-            >
-              <option value="once">Once</option>
-              <option value="daily">Daily</option>
-            </select>
+            {/* CUSTOM DROPDOWN */}
+            <div className="relative">
+              <select
+                value={repeat}
+                onChange={(e) => setRepeat(e.target.value)}
+                className="w-full bg-black text-white border border-gray-500 px-3 py-2 rounded appearance-none"
+              >
+                <option value="once">Once</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+
+              <span className="absolute right-3 top-2.5 text-gray-400 pointer-events-none">
+                ▼
+              </span>
+            </div>
           </div>
 
-          {/* 🌙 Sleep Analytics */}
-          {sleepHours() && (
-            <p className="text-center text-sm text-gray-400 mb-3">
-              😴 You will sleep ~ {sleepHours()} hrs
+          {/* SLEEP */}
+          {sleep() && (
+            <p className="text-center text-gray-400 mb-3">
+              😴 Sleep: {sleep()} hrs
             </p>
           )}
 
+          {/* ADD BUTTON */}
           <button
             onClick={addAlarm}
             className="w-full border py-2 rounded hover:bg-white hover:text-black mb-4"
@@ -194,25 +197,27 @@ function Alarm() {
           </button>
 
           {/* LIST */}
-          <div className="space-y-2 max-h-60 overflow-y-auto text-sm">
+          <div className="space-y-2 max-h-64 overflow-y-auto">
             {alarms.length === 0 && (
-              <p className="text-gray-500 text-center">No alarms</p>
+              <p className="text-center text-gray-500">No alarms</p>
             )}
 
             {alarms.map((a) => (
               <div
                 key={a.id}
-                className="flex justify-between items-center border border-gray-800 rounded px-3 py-2"
+                className={`flex justify-between items-center px-3 py-2 rounded border
+                ${a.active ? "border-green-500" : "border-gray-800"}`}
               >
                 <span>
                   {a.time} • {a.repeat}
                 </span>
 
                 <div className="flex gap-2">
-                  <button onClick={() => toggleAlarm(a.id)}>
+                  <button onClick={() => toggle(a.id)}>
                     {a.active ? "ON" : "OFF"}
                   </button>
-                  <button onClick={() => deleteAlarm(a.id)}>✕</button>
+
+                  <button onClick={() => remove(a.id)}>✕</button>
                 </div>
               </div>
             ))}
@@ -220,26 +225,63 @@ function Alarm() {
         </div>
       </div>
 
-      {/* 🔔 POPUP CARD */}
-      {triggeredAlarm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-          <div className="bg-white text-black rounded-2xl p-6 text-center w-80 shadow-xl">
-            <h2 className="text-xl font-bold mb-2">⏰ Alarm</h2>
-            <p className="mb-4">{triggeredAlarm.time}</p>
-            <button
-              onClick={stopAlarm}
-              className="px-4 py-2 bg-black text-white rounded"
-            >
-              Stop
-            </button>
+      {/* POPUP */}
+      {triggered && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
+          <div className="bg-white text-black rounded-3xl p-8 w-[90%] max-w-sm text-center shadow-2xl animate-scaleIn">
+            {/* ICON */}
+            <div className="text-5xl mb-4 animate-pulse">⏰</div>
+
+            {/* TITLE */}
+            <h2 className="text-2xl font-bold mb-2">Alarm Ringing</h2>
+
+            {/* TIME */}
+            <p className="text-lg font-mono mb-6">{triggered.time}</p>
+
+            {/* ACTIONS */}
+            <div className="flex gap-3 justify-center">
+              {/* STOP */}
+              <button
+                onClick={stop}
+                className="flex-1 bg-black text-white py-2 rounded-xl hover:opacity-80 transition"
+              >
+                Stop
+              </button>
+
+              {/* SNOOZE */}
+              <button
+                onClick={() => {
+                  stop();
+
+                  // add snooze (5 min later)
+                  const [h, m] = triggered.time.split(":");
+                  const snooze = new Date();
+                  snooze.setHours(h, m);
+                  snooze.setMinutes(snooze.getMinutes() + 5);
+
+                  const newTime = snooze.toTimeString().slice(0, 5);
+
+                  setAlarms((prev) => [
+                    {
+                      id: Date.now(),
+                      time: newTime,
+                      repeat: "once",
+                      active: true,
+                    },
+                    ...prev,
+                  ]);
+                }}
+                className="flex-1 border border-black py-2 rounded-xl hover:bg-black hover:text-white transition"
+              >
+                Snooze
+              </button>
+            </div>
+
+            {/* FOOTER */}
+            <p className="text-xs text-gray-500 mt-4">Tap Stop to dismiss</p>
           </div>
         </div>
       )}
-
-      {/* BG */}
-      <div className="absolute inset-0 -z-10 opacity-20">
-        <div className="w-full h-full bg-gradient-to-br from-white/10 via-transparent to-white/5" />
-      </div>
     </div>
   );
 }
