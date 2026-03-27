@@ -13,3 +13,5 @@
     npm install @mui/material @mui/x-data-grid @emotion/react @emotion/styled
 
     npm install mathjs
+
+    npm install react-icons
