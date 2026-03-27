@@ -6,6 +6,8 @@ import DashboardCard from "../components/DashboardCard";
 import AnimatedBackground from "../components/AnimatedBackground";
 import Spotlight from "../components/Spotlight";
 
+import { routes } from "../routes/routes"; // ✅ added
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -55,19 +57,27 @@ function Dashboard({ dark, setDark }) {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // menu
-  const menu = useMemo(
-    () => [
-      { name: "Dashboard", icon: faHouse, path: "/" },
-      { name: "Planner", icon: faCalendar, path: "/calendar" },
-      { name: "Focus", icon: faClock, path: "/pomodoro" },
-      { name: "Analytics", icon: faChartBar, path: "/analytics" },
-      { name: "Settings", icon: faGear, path: "/settings" },
-    ],
-    [],
-  );
 
-  // tools (with dynamic details)
+  // ✅ NEW MENU FROM ROUTES (NO LOGIC CHANGE ELSEWHERE)
+  const menu = useMemo(() => {
+    return routes.map((r) => ({
+      name: r.name,
+      path: r.path,
+    }));
+  }, []);
+const routeIcons = {
+  "/": faHouse,
+  "/clock": faClock,
+  "/stopwatch": faStopwatch,
+  "/pomodoro": faClock,
+  "/todo": faListCheck,
+  "/calendar": faCalendar,
+  "/alarm": faBell,
+  "/notes": faNoteSticky,
+  "/calculator": faCalculator,
+  "/focus": faBullseye,
+};
+  // tools (UNCHANGED)
   const tools = useMemo(
     () => [
       {
@@ -172,6 +182,7 @@ function Dashboard({ dark, setDark }) {
             </button>
           </div>
 
+          {/* ✅ ROUTES BASED MENU */}
           {menu.map((item) => {
             const isActive = location.pathname === item.path;
 
@@ -188,14 +199,17 @@ function Dashboard({ dark, setDark }) {
                     : "text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10"
                 }`}
               >
-                <FontAwesomeIcon icon={item.icon} />
+                <FontAwesomeIcon
+                  icon={routeIcons[item.path]}
+                  className="text-sm"
+                />
                 {item.name}
               </div>
             );
           })}
         </div>
 
-        {/* Main */}
+        {/* MAIN (UNCHANGED) */}
         <motion.div
           className="flex-1 p-6"
           initial={{ opacity: 0, y: 20 }}
@@ -203,7 +217,6 @@ function Dashboard({ dark, setDark }) {
         >
           {/* Topbar */}
           <div className="flex justify-between items-center mb-10">
-            {/* Hamburger */}
             <button
               onClick={() => setSidebarOpen(true)}
               className="md:hidden text-xl"
@@ -216,7 +229,6 @@ function Dashboard({ dark, setDark }) {
             </h1>
 
             <div className="flex items-center gap-3">
-              {/* Search */}
               <div
                 onClick={() => setOpenSpotlight(true)}
                 className="hidden md:flex items-center gap-2 bg-gray-100 dark:bg-white/5 px-6 py-3 rounded-lg cursor-pointer"
@@ -225,7 +237,6 @@ function Dashboard({ dark, setDark }) {
                 Search ... (Ctrl + k)
               </div>
 
-              {/* Theme */}
               <button
                 onClick={() => setDark(!dark)}
                 className="flex items-center gap-2 bg-blue-500 px-6 py-3 rounded-lg text-white"

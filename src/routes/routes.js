@@ -1,3 +1,5 @@
+// src/routes/routes.js
+
 import Dashboard from "../pages/Dashboard";
 import ClockPage from "../pages/ClockPage";
 import StopwatchPage from "../pages/StopwatchPage";
@@ -10,14 +12,14 @@ import Calculator from "../components/Calculator";
 import FocusMode from "../components/FocusMode";
 
 export const routes = [
-  { path: "/", component: Dashboard },
-  { path: "/clock", component: ClockPage },
-  { path: "/stopwatch", component: StopwatchPage },
-  { path: "/pomodoro", component: PomodoroPage },
-  { path: "/todo", component: TodoPage },
-  { path: "/calendar", component: Calendar },
-  { path: "/alarm", component: Alarm },
-  { path: "/notes", component: Notes },
-  { path: "calculator", component: Calculator },
-  { path: "/focus", component: FocusMode },
+  { path: "/", name: "Dashboard", component: Dashboard },
+  { path: "/clock", name: "Clock", component: ClockPage },
+  { path: "/stopwatch", name: "Stopwatch", component: StopwatchPage },
+  { path: "/pomodoro", name: "Pomodoro", component: PomodoroPage },
+  { path: "/todo", name: "Todo", component: TodoPage },
+  { path: "/calendar", name: "Calendar", component: Calendar },
+  { path: "/alarm", name: "Alarm", component: Alarm },
+  { path: "/notes", name: "Notes", component: Notes },
+  { path: "/calculator", name: "Calculator", component: Calculator }, // fixed
+  { path: "/focus", name: "Focus Mode", component: FocusMode },
 ];
