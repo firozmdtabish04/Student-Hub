@@ -1,3 +1,7 @@
+Link to go live preview:
+https://exquisite-salmiakki-102247.netlify.app/
+
+
 # 🚀 Student Hub (JEET)
 
 A modern **Productivity Dashboard** built using **React + Vite + Tailwind CSS**, featuring a powerful **Spotlight Search (Ctrl + K)** for fast navigation between tools.
