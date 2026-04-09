@@ -1,5 +1,5 @@
 Link to go live preview:
-https://exquisite-salmiakki-102247.netlify.app/
+https://student-hub-8c7e.vercel.app/focus
 
 
 # 🚀 Student Hub (JEET)
